@@ -1,3 +1,4 @@
+import { LoginService } from 'src/app/demo/service/login.service';
 import { WebcamModule } from 'ngx-webcam';
 import { NgModule } from '@angular/core';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
@@ -12,10 +13,11 @@ import { EventService } from './demo/service/event.service';
 import { IconService } from './demo/service/icon.service';
 import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
+import { DropdownModule } from 'primeng/dropdown';
 
 @NgModule({
     declarations: [AppComponent, NotfoundComponent],
-    imports: [AppRoutingModule, AppLayoutModule, WebcamModule],
+    imports: [AppRoutingModule, AppLayoutModule, WebcamModule, DropdownModule],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         CountryService,
@@ -25,6 +27,7 @@ import { PhotoService } from './demo/service/photo.service';
         NodeService,
         PhotoService,
         ProductService,
+        LoginService,
     ],
     bootstrap: [AppComponent],
 })

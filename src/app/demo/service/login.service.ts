@@ -1,3 +1,4 @@
+import { JsonConvert } from 'json2typescript';
 import { Observable } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
 import { UserIdentity } from '../api/UserIdenity';
@@ -17,17 +18,59 @@ const route = {
 })
 export class LoginService implements OnInit {
     private KEY: string = 'userIdentity';
-    private currentUser: UserInfo | null = null;
+    private TOKEN_KEY: string = 'token';
     private isLoggedIn: boolean = false;
+    private jsonConvert: JsonConvert = new JsonConvert();
+
     public redirectUrl: string | null = null;
+    public currentUser: UserInfo | null = null;
     constructor(
         private localService: LocalService,
         private hermesApiService: HermesApiService,
         private amatApiService: AmatApiService
-    ) {}
+    ) {
+        if (this.isAuthenticated()) {
+            var token = this.localService.getData(this.TOKEN_KEY);
+            this.currentUser = this.parseJWTToUserInfo(token);
+            this.isLoggedIn = true;
+        }
+    }
 
-    ngOnInit(): void {
-        
+    ngOnInit(): void {}
+
+    isAuthenticated(): boolean {
+        return !!this.localService.getData(this.TOKEN_KEY);
+    }
+
+    setJwt(token: string): void {
+        this.localService.saveData(this.TOKEN_KEY, token);
+        this.currentUser = this.parseJWTToUserInfo(token);
+        this.isLoggedIn = true;
+        console.log('set token');
+    }
+
+    parseJWTToUserInfo(token: string): UserInfo {
+        return this.jsonConvert.deserializeObject(
+            this.parseJWT(token),
+            UserInfo
+        );
+    }
+
+    parseJWT(token: string): any {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(
+            window
+                .atob(base64)
+                .split('')
+                .map(function (c) {
+                    return (
+                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                    );
+                })
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
     }
 
     sendBase64ToLogin(base64List: Array<Object>): void {
@@ -68,8 +111,14 @@ export class LoginService implements OnInit {
         return this.hermesApiService.post(route.hermesLogin, payload);
     }
 
+    setCurrentUser(userInfo: UserInfo): void {
+        this.currentUser = userInfo;
+    }
+
     logout(): void {
         this.isLoggedIn = false;
+        this.currentUser = null;
         this.localService.clearData();
+        window.location.reload();
     }
 }

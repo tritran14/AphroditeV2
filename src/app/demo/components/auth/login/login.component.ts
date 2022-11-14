@@ -7,6 +7,7 @@ import { Observable, Subject } from 'rxjs';
 import { LoginService } from 'src/app/demo/service/login.service';
 import { UserIdentity } from 'src/app/demo/api/UserIdenity';
 import { JsonConvert } from 'json2typescript';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -36,10 +37,13 @@ export class LoginComponent implements OnInit {
 
     private trigger: Subject<void> = new Subject<void>();
     private jsonConvert: JsonConvert = new JsonConvert();
+    returnUrl: any;
 
     constructor(
         private loginService: LoginService,
-        public layoutService: LayoutService
+        public layoutService: LayoutService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     public handleImage(webcamImage: WebcamImage): void {
@@ -56,7 +60,9 @@ export class LoginComponent implements OnInit {
         this.trigger.next();
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    }
 
     startCapture(): void {
         this.imageList = [];
@@ -79,6 +85,7 @@ export class LoginComponent implements OnInit {
         console.log({ base64List });
         this.sendBase64ToServer(base64List);
     }
+
     sendBase64ToServer(base64List: Array<Base64Image>): void {
         this.loginService.sendBase64ToServer(base64List).subscribe((data) => {
             this.userIdentity = data as UserIdentity;
@@ -87,6 +94,7 @@ export class LoginComponent implements OnInit {
             );
         });
     }
+    
     signIn(): void {
         this.userIdentity = new UserIdentity();
         console.log('log in');
@@ -99,19 +107,11 @@ export class LoginComponent implements OnInit {
                 )
                 .subscribe((data) => {
                     let response = data as HermesResponse;
-
                     console.log({ data });
-
                     if (response.success) {
                         let jwt = response.value.jwt;
-                        console.log('jwt : ' + jwt);
-                        let userInfoObj = this.parseJWT(jwt);
-                        let userInfo = this.jsonConvert.deserializeObject(
-                            userInfoObj,
-                            UserInfo
-                        );
-                        console.log(userInfo);
-                        localStorage.setItem('JWT', jwt);
+                        this.loginService.setJwt(jwt);
+                        this.router.navigateByUrl(this.returnUrl);
                     } else {
                         alert('Invalid account, password or face');
                     }
@@ -119,23 +119,6 @@ export class LoginComponent implements OnInit {
         } else {
             alert('require infomation');
         }
-    }
-
-    parseJWT(token: string): any {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(
-            window
-                .atob(base64)
-                .split('')
-                .map(function (c) {
-                    return (
-                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-                    );
-                })
-                .join('')
-        );
-        return JSON.parse(jsonPayload);
     }
 }
 
