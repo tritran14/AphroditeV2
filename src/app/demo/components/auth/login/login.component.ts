@@ -6,6 +6,7 @@ import { WebcamImage } from 'ngx-webcam';
 import { Observable, Subject } from 'rxjs';
 import { LoginService } from 'src/app/demo/service/login.service';
 import { UserIdentity } from 'src/app/demo/api/UserIdenity';
+import { JsonConvert } from 'json2typescript';
 
 @Component({
     selector: 'app-login',
@@ -34,6 +35,7 @@ export class LoginComponent implements OnInit {
     private DEPLAY_SECOND = 500;
 
     private trigger: Subject<void> = new Subject<void>();
+    private jsonConvert: JsonConvert = new JsonConvert();
 
     constructor(
         private loginService: LoginService,
@@ -97,9 +99,18 @@ export class LoginComponent implements OnInit {
                 )
                 .subscribe((data) => {
                     let response = data as HermesResponse;
+
+                    console.log({ data });
+
                     if (response.success) {
                         let jwt = response.value.jwt;
                         console.log('jwt : ' + jwt);
+                        let userInfoObj = this.parseJWT(jwt);
+                        let userInfo = this.jsonConvert.deserializeObject(
+                            userInfoObj,
+                            UserInfo
+                        );
+                        console.log(userInfo);
                         localStorage.setItem('JWT', jwt);
                     } else {
                         alert('Invalid account, password or face');
@@ -110,15 +121,22 @@ export class LoginComponent implements OnInit {
         }
     }
 
-    parseJWT(token: string): UserInfo {
+    parseJWT(token: string): any {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        var jsonPayload = decodeURIComponent(
+            window
+                .atob(base64)
+                .split('')
+                .map(function (c) {
+                    return (
+                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                    );
+                })
+                .join('')
+        );
         return JSON.parse(jsonPayload);
     }
-
 }
 
 class Base64Image {
