@@ -1,9 +1,10 @@
 import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { UserIdentity } from '../api/UserIdenity';
 import { AmatApiService } from './amat-api.service';
 import { HermesApiService } from './hermes-api.service';
 import { LocalService } from './local.service';
+import { UserInfo } from '../api/UserInfo';
 
 const route = {
     login: 'login',
@@ -14,13 +15,21 @@ const route = {
 @Injectable({
     providedIn: 'root',
 })
-export class LoginService {
+export class LoginService implements OnInit {
     private KEY: string = 'userIdentity';
+    private currentUser: UserInfo | null = null;
+    private isLoggedIn: boolean = false;
+    public redirectUrl: string | null = null;
     constructor(
         private localService: LocalService,
         private hermesApiService: HermesApiService,
         private amatApiService: AmatApiService
     ) {}
+
+    ngOnInit(): void {
+        
+    }
+
     sendBase64ToLogin(base64List: Array<Object>): void {
         this.amatApiService.post(route.login, base64List).subscribe((data) => {
             let userIdentity = data as UserIdentity;
@@ -57,5 +66,10 @@ export class LoginService {
             userIdentity: JSON.stringify(userIdentity),
         };
         return this.hermesApiService.post(route.hermesLogin, payload);
+    }
+
+    logout(): void {
+        this.isLoggedIn = false;
+        this.localService.clearData();
     }
 }

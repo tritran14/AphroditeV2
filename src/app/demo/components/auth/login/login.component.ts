@@ -1,3 +1,5 @@
+import { UserInfo } from './../../../api/UserInfo';
+import { HermesResponse } from './../../../api/response';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Component, OnInit } from '@angular/core';
 import { WebcamImage } from 'ngx-webcam';
@@ -84,6 +86,8 @@ export class LoginComponent implements OnInit {
         });
     }
     signIn(): void {
+        this.userIdentity = new UserIdentity();
+        console.log('log in');
         if (this.userIdentity != null && this.username && this.password) {
             this.loginService
                 .sendUserInfoToServer(
@@ -92,12 +96,29 @@ export class LoginComponent implements OnInit {
                     this.userIdentity
                 )
                 .subscribe((data) => {
-                    console.log(data);
+                    let response = data as HermesResponse;
+                    if (response.success) {
+                        let jwt = response.value.jwt;
+                        console.log('jwt : ' + jwt);
+                        localStorage.setItem('JWT', jwt);
+                    } else {
+                        alert('Invalid account, password or face');
+                    }
                 });
         } else {
             alert('require infomation');
         }
     }
+
+    parseJWT(token: string): UserInfo {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
+
 }
 
 class Base64Image {
