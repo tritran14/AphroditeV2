@@ -1,10 +1,10 @@
 <div>
     <h1>Hello, {{ userInfo!.firstName }} {{ userInfo!.lastName }}</h1>
-    <p-image
-        [src]="CHECK_OUT_IMAGE"
-        alt="Image"
-        width="150"
-        height="200"
-        (click)="onClick()"
-    ></p-image>
+    <p-image [src]="logIcon()" alt="Image" width="150" height="200" (click)="onClick()"></p-image>
+    <div>
+        <div>The current time : {{ rxTime | date: 'HH:mm' }}</div>
+        <div *ngIf="isCheckedIn()">Check In time today: {{userLog?.checkInTime| date:'HH:mm'}}</div>
+        <div *ngIf="isCheckedOut()">Check Out time today: {{userLog?.checkOutTime| date:'HH:mm'}}</div>
+        <div *ngIf="isCheckedOut()">Current AFT: {{aft.toFixed(2)}} hour(s)</div>
+    </div>
 </div>

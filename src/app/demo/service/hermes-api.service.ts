@@ -31,13 +31,10 @@ export class HermesApiService {
         this.HERMES_URL = this.configService.HERMES_URL;
     }
 
-    public get(
-        path: string,
-        params: HttpParams = new HttpParams()
-    ): Observable<any> {
+    public get(path: string, options: object = {}): Observable<any> {
         return this.httpClient.get(this.pattern(path), {
             ...this.OPTIONS,
-            ...params,
+            ...options,
         });
     }
 
