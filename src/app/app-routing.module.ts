@@ -1,3 +1,4 @@
+import { RegisterComponent } from './demo/components/auth/register/register.component';
 import { HermesGuard } from './demo/service/hermes.guard';
 import { LoginComponent } from './demo/components/auth/login/login.component';
 import { RouterModule } from '@angular/router';
@@ -26,6 +27,10 @@ import { AppLayoutComponent } from './layout/app.layout.component';
                 {
                     path: 'login',
                     component: LoginComponent,
+                },
+                {
+                    path: 'register',
+                    component: RegisterComponent,
                 },
                 {
                     path: 'auth',

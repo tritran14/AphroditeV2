@@ -1,17 +1,20 @@
+import { RegisterService } from './../../../service/register.service';
 import { UserInfo } from './../../../api/UserInfo';
-import { HermesResponse } from './../../../api/response';
-import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { JsonConvert } from 'json2typescript';
 import { WebcamImage } from 'ngx-webcam';
 import { Observable, Subject } from 'rxjs';
-import { LoginService } from 'src/app/demo/service/login.service';
+import { HermesResponse } from 'src/app/demo/api/response';
 import { UserIdentity } from 'src/app/demo/api/UserIdenity';
-import { JsonConvert } from 'json2typescript';
-import { ActivatedRoute, Router } from '@angular/router';
+import { LoginService } from 'src/app/demo/service/login.service';
+import { LayoutService } from 'src/app/layout/service/app.layout.service';
+import { Base64 } from 'src/app/demo/api/Base64';
+import { UserImage } from 'src/app/demo/api/UserImage';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
+    selector: 'app-register',
+    templateUrl: './register.component.html',
     styles: [
         `
             :host ::ng-deep .pi-eye,
@@ -23,15 +26,26 @@ import { ActivatedRoute, Router } from '@angular/router';
         `,
     ],
 })
-export class LoginComponent implements OnInit {
+export class RegisterComponent implements OnInit {
+    userInfo: UserInfo = {
+        username: null,
+        firstName: null,
+        lastName: null,
+        email: null,
+        roles: [],
+    };
+
     valCheck: string[] = ['remember'];
     password!: string;
+    password2!: string;
     username!: string;
+    public validImage: Array<Base64> = [];
     public showWebcam = true;
     public webcamImage: WebcamImage | null = null;
     public imageList: Array<WebcamImage> = [];
     public userIdentity: UserIdentity | null = null;
 
+    private TOTAL_NEED_IMAGE: number = 10;
     private TOTAL_IMAGE: number = 10;
     private DEPLAY_SECOND = 500;
 
@@ -40,7 +54,7 @@ export class LoginComponent implements OnInit {
     returnUrl: any;
 
     constructor(
-        private loginService: LoginService,
+        private registerService: RegisterService,
         public layoutService: LayoutService,
         private router: Router,
         private route: ActivatedRoute
@@ -62,11 +76,13 @@ export class LoginComponent implements OnInit {
 
     ngOnInit(): void {
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+        this.username = 'tri123';
     }
 
     startCapture(): void {
         this.imageList = [];
         this.userIdentity = null;
+        this.validImage = [];
 
         for (let i = 0; i < this.TOTAL_IMAGE; ++i) {
             setTimeout(() => {
@@ -89,39 +105,43 @@ export class LoginComponent implements OnInit {
     }
 
     sendBase64ToServer(base64List: Array<Base64Image>): void {
-        this.loginService.sendBase64ToServer(base64List).subscribe((data) => {
-            this.userIdentity = data as UserIdentity;
-            // alert(
-            //     `name : ${this.userIdentity.name}, username: ${this.username}, password: ${this.password}`
-            // );
-            this.signIn();
-        });
+        this.registerService
+            .sendBase64ToServer(base64List)
+            .subscribe((data) => {
+                if (data) {
+                    let validBase64 = data.validImage as Array<Base64>;
+                    console.log(data.message);
+                    console.log(validBase64);
+                    validBase64.forEach((data, id) => {
+                        this.validImage.push(
+                            new Base64(this.validImage.length, data.value)
+                        );
+                    });
+                    if (this.validImage.length >= this.TOTAL_NEED_IMAGE) {
+                        console.log('good number of image');
+                        this.uploadFace();
+                    }
+                }
+            });
     }
 
-    signIn(): void {
-        // this.userIdentity = new UserIdentity();
-        console.log('log in');
-        if (this.userIdentity != null && this.username && this.password) {
-            this.loginService
-                .sendUserInfoToServer(
-                    this.username,
-                    this.password,
-                    this.userIdentity
-                )
-                .subscribe((data) => {
-                    let response = data as HermesResponse;
-                    console.log({ data });
-                    if (response.success) {
-                        let jwt = response.value.jwt;
-                        this.loginService.setJwt(jwt);
-                        this.router.navigateByUrl(this.returnUrl);
-                    } else {
-                        alert('Invalid account, password or face');
-                    }
-                });
-        } else {
-            alert('require infomation');
-        }
+    uploadFace(): void {
+        let userImage = new UserImage(this.username, this.validImage);
+        // console.log(userImage);
+        this.registerService
+            .uploadBase64ToServer(userImage)
+            .subscribe((data) => {
+                console.log(data);
+            });
+    }
+
+    isValidUserInfo() {
+        return (
+            this.userInfo.username &&
+            this.userInfo.firstName &&
+            this.userInfo.lastName &&
+            this.userInfo.email
+        );
     }
 }
 

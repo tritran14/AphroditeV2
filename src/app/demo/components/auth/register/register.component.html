@@ -34,10 +34,10 @@
                         class="mb-3"
                     />
                     <div class="text-900 text-3xl font-medium mb-3">
-                        Welcome, Isabel!
+                        Welcome to Aphrodite V2
                     </div>
                     <span class="text-600 font-medium"
-                        >Sign in to continue</span
+                        >Sign up to continue</span
                     >
                 </div>
 
@@ -54,7 +54,7 @@
                         pInputText
                         class="w-full md:w-30rem mb-5"
                         style="padding: 1rem"
-                        [(ngModel)]="username"
+                        [(ngModel)]="userInfo.username"
                     />
 
                     <label
@@ -71,6 +71,65 @@
                         inputStyleClass="w-full p-3 md:w-30rem"
                     ></p-password>
 
+                    <label
+                        for="password1"
+                        class="block text-900 font-medium text-xl mb-2"
+                        >Confirm Password</label
+                    >
+                    <p-password
+                        id="password1"
+                        [(ngModel)]="password2"
+                        placeholder="Password"
+                        [toggleMask]="true"
+                        styleClass="mb-5"
+                        inputStyleClass="w-full p-3 md:w-30rem"
+                    ></p-password>
+
+                    <label
+                        for="email1"
+                        class="block text-900 text-xl font-medium mb-2"
+                        >First name</label
+                    >
+                    <input
+                        id="email1"
+                        type="text"
+                        placeholder="First name"
+                        pInputText
+                        class="w-full md:w-30rem mb-5"
+                        style="padding: 1rem"
+                        [(ngModel)]="userInfo.firstName"
+                    />
+
+                    <label
+                        for="email1"
+                        class="block text-900 text-xl font-medium mb-2"
+                        >Last name</label
+                    >
+                    <input
+                        id="email1"
+                        type="text"
+                        placeholder="Last name"
+                        pInputText
+                        class="w-full md:w-30rem mb-5"
+                        style="padding: 1rem"
+                        [(ngModel)]="userInfo.lastName"
+                    />
+
+                    <label
+                        for="email1"
+                        class="block text-900 text-xl font-medium mb-2"
+                        >Email</label
+                    >
+                    <input
+                        id="email1"
+                        type="text"
+                        placeholder="Email address"
+                        pInputText
+                        class="w-full md:w-30rem mb-5"
+                        style="padding: 1rem"
+                        [(ngModel)]="userInfo.email"
+                    />
+
                     <div>
                         <webcam
                             [trigger]="triggerObservable"
@@ -78,15 +137,15 @@
                             *ngIf="showWebcam"
                         ></webcam>
                         <div></div>
-                        <!-- <button class="actionBtn" (click)="startCapture()">
+                        <button class="actionBtn" (click)="startCapture()">
                             Start capture
-                        </button> -->
+                        </button>
                     </div>
 
                     <button
                         pButton
                         pRipple
-                        label="Sign In"
+                        label="Sign Up"
                         class="w-full p-3 text-xl"
                         (click)="startCapture()"
                     ></button>
