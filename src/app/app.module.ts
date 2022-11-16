@@ -14,9 +14,10 @@ import { IconService } from './demo/service/icon.service';
 import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
 import { DropdownModule } from 'primeng/dropdown';
+import { ManageLogComponent } from './demo/components/admin/manage-log/manage-log.component';
 
 @NgModule({
-    declarations: [AppComponent, NotfoundComponent],
+    declarations: [AppComponent, NotfoundComponent, ManageLogComponent],
     imports: [AppRoutingModule, AppLayoutModule, WebcamModule, DropdownModule],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
