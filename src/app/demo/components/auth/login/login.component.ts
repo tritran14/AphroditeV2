@@ -1,3 +1,5 @@
+import { ToastService } from './../../../../layout/service/toast.service';
+import { MessageService } from 'primeng/api';
 import { UserInfo } from './../../../api/UserInfo';
 import { HermesResponse } from './../../../api/response';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
@@ -19,6 +21,22 @@ import { ActivatedRoute, Router } from '@angular/router';
                 transform: scale(1.6);
                 margin-right: 1rem;
                 color: var(--primary-color) !important;
+            }
+            a:link,
+            a:visited {
+                background-color: white;
+                color: black;
+                border: 2px solid green;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            a:hover,
+            a:active {
+                background-color: green;
+                color: white;
             }
         `,
     ],
@@ -43,7 +61,8 @@ export class LoginComponent implements OnInit {
         private loginService: LoginService,
         public layoutService: LayoutService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private toastService: ToastService
     ) {}
 
     public handleImage(webcamImage: WebcamImage): void {
@@ -116,11 +135,13 @@ export class LoginComponent implements OnInit {
                         this.loginService.setJwt(jwt);
                         this.router.navigateByUrl(this.returnUrl);
                     } else {
-                        alert('Invalid account, password or face');
+                        this.toastService.showError(response.value);
+                        // alert('Invalid account, password or face');
                     }
                 });
         } else {
-            alert('require infomation');
+            this.toastService.showError('require infomation');
+            // alert('require infomation');
         }
     }
 }

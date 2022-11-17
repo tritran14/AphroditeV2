@@ -1,3 +1,4 @@
+import { AppLayoutModule } from 'src/app/layout/app.layout.module';
 import { InputTextModule } from 'primeng/inputtext';
 import { LoginComponent } from './login/login.component';
 import { NgModule } from '@angular/core';
@@ -20,6 +21,7 @@ import { CheckboxModule } from 'primeng/checkbox';
         FormsModule,
         ButtonModule,
         CheckboxModule,
+        AppLayoutModule,
     ],
     declarations: [RegisterComponent],
 })

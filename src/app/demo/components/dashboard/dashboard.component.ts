@@ -1,3 +1,4 @@
+import { ToastService } from './../../../layout/service/toast.service';
 import { UserInfo } from './../../api/UserInfo';
 import { LoginService } from 'src/app/demo/service/login.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -32,7 +33,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     constructor(
         private loginService: LoginService,
-        private userLogService: UserLogService
+        private userLogService: UserLogService,
+        private toastService: ToastService
     ) {}
 
     ngOnInit() {
@@ -51,7 +53,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.userInfoSub.next(this.loginService.currentUser);
         }
     }
-
+    
     subcribeUserInfo(): void {
         this.userInfoSub.subscribe({
             next: (val) => {

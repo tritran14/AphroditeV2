@@ -1,3 +1,4 @@
+import { ToastModule } from 'primeng/toast';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +19,7 @@ import { AppConfigModule } from './config/config.module';
 import { AppSidebarComponent } from './app.sidebar.component';
 import { AppLayoutComponent } from './app.layout.component';
 import { DropdownModule } from 'primeng/dropdown';
+import { ToastComponent } from './toast/toast.component';
 
 @NgModule({
     declarations: [
@@ -27,6 +29,7 @@ import { DropdownModule } from 'primeng/dropdown';
         AppMenuComponent,
         AppSidebarComponent,
         AppLayoutComponent,
+        ToastComponent,
     ],
     imports: [
         BrowserModule,
@@ -42,7 +45,8 @@ import { DropdownModule } from 'primeng/dropdown';
         RouterModule,
         AppConfigModule,
         DropdownModule,
+        ToastModule,
     ],
-    exports: [AppLayoutComponent],
+    exports: [AppLayoutComponent, ToastComponent],
 })
 export class AppLayoutModule {}

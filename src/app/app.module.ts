@@ -1,3 +1,4 @@
+import { MessageService } from 'primeng/api';
 import { LoginService } from 'src/app/demo/service/login.service';
 import { WebcamModule } from 'ngx-webcam';
 import { NgModule } from '@angular/core';
@@ -15,6 +16,7 @@ import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { ManageLogComponent } from './demo/components/admin/manage-log/manage-log.component';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
     declarations: [AppComponent, NotfoundComponent, ManageLogComponent],
@@ -29,6 +31,8 @@ import { ManageLogComponent } from './demo/components/admin/manage-log/manage-lo
         PhotoService,
         ProductService,
         LoginService,
+        MessageService,
+        ToastModule,
     ],
     bootstrap: [AppComponent],
 })

@@ -64,7 +64,7 @@
                     >
                     <p-password
                         id="password1"
-                        [(ngModel)]="password"
+                        [(ngModel)]="userInfo.password"
                         placeholder="Password"
                         [toggleMask]="true"
                         styleClass="mb-5"
@@ -137,9 +137,20 @@
                             *ngIf="showWebcam"
                         ></webcam>
                         <div></div>
-                        <button class="actionBtn" (click)="startCapture()">
-                            Start capture
-                        </button>
+                        <div>
+                            <h1>
+                                {{ validImage.length }} / {{ TOTAL_NEED_IMAGE }}
+                            </h1>
+                        </div>
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Start capture"
+                            class="p-button-rounded p-button-success"
+                            (click)="startCapture()"
+                        ></button>
+                        <div class="gap"></div>
                     </div>
 
                     <button
@@ -147,7 +158,15 @@
                         pRipple
                         label="Sign Up"
                         class="w-full p-3 text-xl"
-                        (click)="startCapture()"
+                        (click)="signUp()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        label="Sign In"
+                        class="p-button-text"
+                        routerLink="/login"
                     ></button>
                 </div>
             </div>

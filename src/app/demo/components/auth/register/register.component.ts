@@ -1,3 +1,5 @@
+import { UserInfoPayload } from '../../../api/UserInfoPayload';
+import { ToastService } from './../../../../layout/service/toast.service';
 import { RegisterService } from './../../../service/register.service';
 import { UserInfo } from './../../../api/UserInfo';
 import { Component, OnInit } from '@angular/core';
@@ -11,6 +13,7 @@ import { LoginService } from 'src/app/demo/service/login.service';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Base64 } from 'src/app/demo/api/Base64';
 import { UserImage } from 'src/app/demo/api/UserImage';
+import { RegisterPayload } from 'src/app/demo/api/RegisterPayload';
 
 @Component({
     selector: 'app-register',
@@ -27,13 +30,7 @@ import { UserImage } from 'src/app/demo/api/UserImage';
     ],
 })
 export class RegisterComponent implements OnInit {
-    userInfo: UserInfo = {
-        username: null,
-        firstName: null,
-        lastName: null,
-        email: null,
-        roles: [],
-    };
+    userInfo: UserInfoPayload = new UserInfoPayload();
 
     valCheck: string[] = ['remember'];
     password!: string;
@@ -45,7 +42,7 @@ export class RegisterComponent implements OnInit {
     public imageList: Array<WebcamImage> = [];
     public userIdentity: UserIdentity | null = null;
 
-    private TOTAL_NEED_IMAGE: number = 10;
+    public TOTAL_NEED_IMAGE: number = 10;
     private TOTAL_IMAGE: number = 10;
     private DEPLAY_SECOND = 500;
 
@@ -57,7 +54,8 @@ export class RegisterComponent implements OnInit {
         private registerService: RegisterService,
         public layoutService: LayoutService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private toastService: ToastService
     ) {}
 
     public handleImage(webcamImage: WebcamImage): void {
@@ -111,6 +109,7 @@ export class RegisterComponent implements OnInit {
                 if (data) {
                     let validBase64 = data.validImage as Array<Base64>;
                     console.log(data.message);
+                    this.toastService.showInfo(data.message);
                     console.log(validBase64);
                     validBase64.forEach((data, id) => {
                         this.validImage.push(
@@ -118,11 +117,28 @@ export class RegisterComponent implements OnInit {
                         );
                     });
                     if (this.validImage.length >= this.TOTAL_NEED_IMAGE) {
-                        console.log('good number of image');
-                        this.uploadFace();
+                        this.toastService.showSuccess('good number of images');
+                        // this.uploadFace();
+                    } else {
+                        this.startCapture();
                     }
                 }
             });
+    }
+
+    signUpToServer(): void {
+        let data = new RegisterPayload();
+        data.userInfo = Object.assign({}, this.userInfo);
+        this.validImage.forEach((val) =>
+            data.images.push(Object.assign({}, val))
+        );
+        this.registerService.sendDataToHermes(data).subscribe((data) => {
+            if (data.success) {
+                this.toastService.showSuccess('Done');
+            } else {
+                this.toastService.showError(data.value);
+            }
+        });
     }
 
     uploadFace(): void {
@@ -135,13 +151,44 @@ export class RegisterComponent implements OnInit {
             });
     }
 
-    isValidUserInfo() {
-        return (
+    checkValidImage(): boolean {
+        if (this.validImage.length < this.TOTAL_NEED_IMAGE) return true;
+        return false;
+    }
+
+    confirmPassword(): boolean {
+        if (
+            this.userInfo.password &&
+            this.password2 &&
+            this.userInfo.password == this.password2
+        )
+            return true;
+        return false;
+    }
+
+    isValidUserInfo(): boolean {
+        if (
             this.userInfo.username &&
             this.userInfo.firstName &&
             this.userInfo.lastName &&
-            this.userInfo.email
-        );
+            this.userInfo.email &&
+            this.userInfo.password
+        )
+            return true;
+        return false;
+    }
+
+    signUp(): void {
+        if (!this.isValidUserInfo()) {
+            this.toastService.showError('Invalid information');
+        } else if (!this.confirmPassword()) {
+            this.toastService.showError('Check your password');
+        } else if (this.checkValidImage()) {
+            this.toastService.showError('Not enough valid images');
+        } else {
+            console.log('sign up');
+            this.signUpToServer();
+        }
     }
 }
 

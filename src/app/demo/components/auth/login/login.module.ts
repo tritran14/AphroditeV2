@@ -1,3 +1,5 @@
+import { AppModule } from './../../../../app.module';
+import { ToastModule } from 'primeng/toast';
 import { WebcamModule } from 'ngx-webcam';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -8,6 +10,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
+import { AppLayoutModule } from 'src/app/layout/app.layout.module';
 
 @NgModule({
     imports: [
@@ -19,6 +22,7 @@ import { InputTextModule } from 'primeng/inputtext';
         FormsModule,
         PasswordModule,
         WebcamModule,
+        AppLayoutModule,
     ],
     declarations: [LoginComponent],
 })
