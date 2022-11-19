@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { AppLayoutComponent } from './layout/app.layout.component';
+import { AccessComponent } from './demo/components/access/access.component';
 
 @NgModule({
     imports: [
@@ -31,6 +32,10 @@ import { AppLayoutComponent } from './layout/app.layout.component';
                 {
                     path: 'register',
                     component: RegisterComponent,
+                },
+                {
+                    path: 'access-denied',
+                    component: AccessComponent,
                 },
                 {
                     path: 'auth',

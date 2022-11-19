@@ -1,3 +1,4 @@
+import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { LoginService } from 'src/app/demo/service/login.service';
 import { WebcamModule } from 'ngx-webcam';
@@ -17,10 +18,19 @@ import { PhotoService } from './demo/service/photo.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { ManageLogComponent } from './demo/components/admin/manage-log/manage-log.component';
 import { ToastModule } from 'primeng/toast';
+import { Interceptor } from './demo/interceptor/interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AccessComponent } from './demo/components/access/access.component';
 
 @NgModule({
-    declarations: [AppComponent, NotfoundComponent, ManageLogComponent],
-    imports: [AppRoutingModule, AppLayoutModule, WebcamModule, DropdownModule],
+    declarations: [AppComponent, NotfoundComponent, AccessComponent],
+    imports: [
+        AppRoutingModule,
+        AppLayoutModule,
+        WebcamModule,
+        DropdownModule,
+        ButtonModule,
+    ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         CountryService,
@@ -33,6 +43,7 @@ import { ToastModule } from 'primeng/toast';
         LoginService,
         MessageService,
         ToastModule,
+        { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true },
     ],
     bootstrap: [AppComponent],
 })
