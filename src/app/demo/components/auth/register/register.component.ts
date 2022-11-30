@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit {
     public imageList: Array<WebcamImage> = [];
     public userIdentity: UserIdentity | null = null;
 
-    public TOTAL_NEED_IMAGE: number = 10;
+    public TOTAL_NEED_IMAGE: number = 20;
     private TOTAL_IMAGE: number = 10;
     private DEPLAY_SECOND = 500;
 
