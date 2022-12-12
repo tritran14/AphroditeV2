@@ -84,6 +84,10 @@ export class LoginComponent implements OnInit {
     }
 
     startCapture(): void {
+        if (!this.username || !this.password) {
+            this.toastService.showError('username or password is required');
+            return;
+        }
         this.imageList = [];
         this.userIdentity = null;
 

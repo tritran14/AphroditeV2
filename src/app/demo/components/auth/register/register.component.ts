@@ -77,10 +77,10 @@ export class RegisterComponent implements OnInit {
         this.username = 'tri123';
     }
 
-    startCapture(): void {
+    startCapture(flag: number): void {
         this.imageList = [];
         this.userIdentity = null;
-        this.validImage = [];
+        if (flag == 0) this.validImage = [];
 
         for (let i = 0; i < this.TOTAL_IMAGE; ++i) {
             setTimeout(() => {
@@ -116,11 +116,12 @@ export class RegisterComponent implements OnInit {
                             new Base64(this.validImage.length, data.value)
                         );
                     });
+                    console.log(`len : ${this.validImage.length}`);
                     if (this.validImage.length >= this.TOTAL_NEED_IMAGE) {
                         this.toastService.showSuccess('good number of images');
                         // this.uploadFace();
                     } else {
-                        this.startCapture();
+                        this.startCapture(1);
                     }
                 }
             });
