@@ -1,8 +1,9 @@
+import { trigger } from '@angular/animations';
 import { UserInfoPayload } from '../../../api/UserInfoPayload';
 import { ToastService } from './../../../../layout/service/toast.service';
 import { RegisterService } from './../../../service/register.service';
 import { UserInfo } from './../../../api/UserInfo';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JsonConvert } from 'json2typescript';
 import { WebcamImage } from 'ngx-webcam';
@@ -29,7 +30,7 @@ import { RegisterPayload } from 'src/app/demo/api/RegisterPayload';
         `,
     ],
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
     userInfo: UserInfoPayload = new UserInfoPayload();
 
     valCheck: string[] = ['remember'];
@@ -49,14 +50,26 @@ export class RegisterComponent implements OnInit {
     private trigger: Subject<void> = new Subject<void>();
     private jsonConvert: JsonConvert = new JsonConvert();
     returnUrl: any;
+    isRecording: boolean = false;
 
     constructor(
         private registerService: RegisterService,
         public layoutService: LayoutService,
         private router: Router,
         private route: ActivatedRoute,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private elementRef: ElementRef
     ) {}
+
+    ngOnDestroy() {
+        console.log('destroy register');
+        this.stopRecord();
+        this.elementRef.nativeElement.remove();
+    }
+
+    stopRecord(): void {
+        this.isRecording = false;
+    }
 
     public handleImage(webcamImage: WebcamImage): void {
         console.info('received webcam image', webcamImage);
@@ -77,7 +90,13 @@ export class RegisterComponent implements OnInit {
         this.username = 'tri123';
     }
 
+    triggerStarting(): void {
+        this.isRecording = true;
+        this.startCapture(0);
+    }
+
     startCapture(flag: number): void {
+        if (!this.isRecording) return;
         this.imageList = [];
         this.userIdentity = null;
         if (flag == 0) this.validImage = [];

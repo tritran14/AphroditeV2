@@ -38,6 +38,30 @@ import { ActivatedRoute, Router } from '@angular/router';
                 background-color: green;
                 color: white;
             }
+            .progress-spinner {
+                position: fixed;
+                z-index: 999;
+                height: 2em;
+                width: 2em;
+                overflow: show;
+                margin: auto;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+
+            /* Transparent Overlay */
+            .progress-spinner:before {
+                content: '';
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.53);
+            }
         `,
     ],
 })
@@ -56,6 +80,7 @@ export class LoginComponent implements OnInit {
     private trigger: Subject<void> = new Subject<void>();
     private jsonConvert: JsonConvert = new JsonConvert();
     returnUrl: any;
+    isLoading: boolean = false;
 
     constructor(
         private loginService: LoginService,
@@ -90,11 +115,12 @@ export class LoginComponent implements OnInit {
         }
         this.imageList = [];
         this.userIdentity = null;
-
+        this.isLoading = true;
         for (let i = 0; i < this.TOTAL_IMAGE; ++i) {
             setTimeout(() => {
                 this.triggerSnapshot();
                 if (i == this.TOTAL_IMAGE - 1) {
+                    this.isLoading = false;
                     this.handleAfterCapture();
                 }
             }, this.DEPLAY_SECOND * (i + 1));
@@ -123,6 +149,7 @@ export class LoginComponent implements OnInit {
 
     signIn(): void {
         // this.userIdentity = new UserIdentity();
+        this.isLoading = true;
         console.log('log in');
         if (this.userIdentity != null && this.username && this.password) {
             this.loginService
@@ -131,18 +158,24 @@ export class LoginComponent implements OnInit {
                     this.password,
                     this.userIdentity
                 )
-                .subscribe((data) => {
-                    let response = data as HermesResponse;
-                    console.log({ data });
-                    if (response.success) {
-                        let jwt = response.value.jwt;
-                        this.loginService.setJwt(jwt);
-                        this.router.navigateByUrl(this.returnUrl);
-                    } else {
-                        this.toastService.showError(response.value);
-                        // alert('Invalid account, password or face');
+                .subscribe(
+                    (data) => {
+                        let response = data as HermesResponse;
+                        console.log({ data });
+                        if (response.success) {
+                            let jwt = response.value.jwt;
+                            this.loginService.setJwt(jwt);
+                            this.router.navigateByUrl(this.returnUrl);
+                        } else {
+                            this.toastService.showError(response.value);
+                            // alert('Invalid account, password or face');
+                        }
+                        this.isLoading = false;
+                    },
+                    () => {
+                        this.isLoading = false;
                     }
-                });
+                );
         } else {
             this.toastService.showError('require infomation');
             // alert('require infomation');

@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import { AppLayoutModule } from 'src/app/layout/app.layout.module';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
     imports: [
@@ -22,6 +23,7 @@ import { AppLayoutModule } from 'src/app/layout/app.layout.module';
         FormsModule,
         PasswordModule,
         WebcamModule,
+        ProgressSpinnerModule,
         AppLayoutModule,
     ],
     declarations: [LoginComponent],

@@ -133,12 +133,22 @@
                             </h1>
                         </div>
                         <button
+                            *ngIf="!isRecording"
                             pButton
                             pRipple
                             type="button"
                             label="Start capture"
                             class="p-button-rounded p-button-success"
-                            (click)="startCapture(0)"
+                            (click)="triggerStarting()"
+                        ></button>
+                        <button
+                            *ngIf="isRecording"
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Stop capture"
+                            class="p-button-rounded p-button-warning"
+                            (click)="stopRecord()"
                         ></button>
                         <div class="gap"></div>
                     </div>
@@ -157,6 +167,8 @@
                         label="Sign In"
                         class="p-button-text"
                         routerLink="/login"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }"
                     ></button>
                 </div>
             </div>
